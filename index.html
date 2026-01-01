@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Tracker</title>
+    <style>
+        body { font-family: sans-serif; background: #1e1e2f; color: white; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
+        .card { background: #27293d; padding: 30px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        input { padding: 10px; border-radius: 5px; border: none; width: 70%; margin-bottom: 10px; text-align: center; text-transform: uppercase; font-weight: bold;}
+        button { padding: 10px 20px; background: #e14eca; border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; }
+        button:hover { background: #bf3cad; }
+        
+        .price-box { margin-top: 20px; }
+        .symbol { font-size: 1.2rem; color: #aaa; }
+        .price { font-size: 2.5rem; font-weight: bold; margin: 5px 0; }
+        .change { font-size: 1.2rem; font-weight: bold; }
+        .up { color: #00f2c3; } /* Green */
+        .down { color: #fd5d93; } /* Red */
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Stock Check</h2>
+        <input type="text" id="symbolInput" placeholder="AAPL, TSLA, BTC..." value="AAPL">
+        <button onclick="checkStock()">Check Price</button>
+
+        <div class="price-box">
+            <div class="symbol" id="symbol">--</div>
+            <div class="price" id="price">--</div>
+            <div class="change" id="change">--</div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 15px;">Last Update: <span id="time">--</span></p>
+        </div>
+    </div>
+
+    <script>
+        async function checkStock() {
+            const symbol = document.getElementById('symbolInput').value;
+            const btn = document.querySelector('button');
+            
+            btn.innerText = "Loading...";
+            
+            try {
+                const res = await fetch(`/api/stock?symbol=${symbol}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('symbol').innerText = data.symbol;
+                    document.getElementById('price').innerText = "$" + data.price;
+                    document.getElementById('time').innerText = data.updatedAt;
+
+                    // Color logic for Up/Down
+                    const changeEl = document.getElementById('change');
+                    changeEl.innerText = `${data.change > 0 ? '+' : ''}${data.change} (${data.percent}%)`;
+                    
+                    changeEl.className = "change " + (data.change >= 0 ? "up" : "down");
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert("Failed to fetch data");
+            } finally {
+                btn.innerText = "Check Price";
+            }
+        }
+    </script>
+</body>
+</html>
