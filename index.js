@@ -8,7 +8,7 @@ app.use(express.static('public'));
 
 app.get('/api/stock', async (req, res) => {
     const symbol = req.query.symbol || 'AAPL'; // Default to Apple if no symbol provided
-    const apiKey = process.env.FINNHUB_API_KEY;
+    const apiKey = "d5b3fs1r01qh7ajk85ngd5b3fs1r01qh7ajk85o0";
 
     // Check if user forgot to add API Key
     if (!apiKey || apiKey === 'd5b3bphr01qh7ajk7dn0d5b3bphr01qh7ajk7dng') {
